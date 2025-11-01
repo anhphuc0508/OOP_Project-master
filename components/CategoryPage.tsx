@@ -18,6 +18,14 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ products, filterBy, onProdu
     if (filterBy.type === 'brand') {
       return products.filter(p => p.brand === filterBy.value);
     }
+    
+    // Check for subcategory match first
+    const subCategoryProducts = products.filter(p => p.subCategory && p.subCategory === filterBy.value);
+    if (subCategoryProducts.length > 0) {
+        return subCategoryProducts;
+    }
+
+    // Fallback to main category
     return products.filter(p => p.category === filterBy.value);
   }, [filterBy, products]);
 

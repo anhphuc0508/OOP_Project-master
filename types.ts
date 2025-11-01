@@ -31,6 +31,10 @@ export interface Product {
   variants: ProductVariant[];
   category: string;
   brand: string; // Danh sách các biến thể
+  sku?: string;
+  subCategory?: string;
+  sold: number;
+  total: number;
 }
 // --- SỬA LỖI LOGIC Ở ĐÂY ---
 // CartItem không nên kế thừa (extends) Product.
@@ -48,49 +52,49 @@ export interface CartItem {
 }
 
 export interface Brand {
-  id: number;
-  name: string;
-  logo: string;
+  id: number;
+  name: string;
+  logo: string;
 }
 
 export interface Article {
-  id: number;
-  title: string;
-  date: string;
-  snippet: string;
-  image: string;
-  category: string;
+  id: number;
+  title: string;
+  date: string;
+  snippet: string;
+  image: string;
+  category: string;
 }
 
 export interface MegaMenuLink {
-  label: string;
-  href: string;
-  category?: string;
+  label: string;
+  href: string;
+  category?: string;
 }
 
 export interface MegaMenuItem {
-  title: string;
-  links: MegaMenuLink[];
+  title: string;
+  links: MegaMenuLink[];
 }
 
 export interface NavLink {
-  label: string;
-  href: string;
-  megaMenu?: MegaMenuItem[];
+  label: string;
+  href: string;
+  megaMenu?: MegaMenuItem[];
 }
 
 export type SortOptionValue = 'default' | 'popularity' | 'price-asc' | 'price-desc';
 
 export interface SortOption {
-  value: SortOptionValue;
-  label: string;
+  value: SortOptionValue;
+  label: string;
 }
 
 export type Theme = 'default' | 'light' | 'black';
 
 export interface User {
-  name: string;
-  role: 'USER' | 'ADMIN';
+  name: string;
+  role: 'USER' | 'ADMIN';
 }
 
 export type OrderStatus = 'Đã giao hàng' | 'Đang xử lý' | 'Đã hủy';
@@ -99,19 +103,19 @@ export type PaymentStatus = 'Chưa thanh toán' | 'Đã thanh toán';
 // --- ĐÃ XÓA 'ProductVariant' BỊ TRÙNG LẶP Ở ĐÂY ---
 
 export interface Order {
-  id: string;
-  date: string;
-  status: OrderStatus;
-  total: number;
-  items: CartItem[]; // Giờ đây 'items' là một mảng CartItem đã sửa
-  customer: {
-    name: string;
-    email: string;
-    phone: string;
-    address: string;
-  };
-  paymentStatus: PaymentStatus;
-  paymentMethod: 'cod' | 'card';
+  id: string;
+  date: string;
+  status: OrderStatus;
+  total: number;
+  items: CartItem[]; // Giờ đây 'items' là một mảng CartItem đã sửa
+  customer: {
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+  };
+  paymentStatus: PaymentStatus;
+  paymentMethod: 'cod' | 'card';
 }
 export interface UserResponse {
   userId: number;

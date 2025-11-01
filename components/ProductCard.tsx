@@ -31,16 +31,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onProductSelect }) =
     <div className="bg-gym-dark rounded-lg overflow-hidden flex flex-col group transition-all duration-300 hover:shadow-2xl hover:shadow-gym-yellow/20 hover:-translate-y-1">
       <div className="relative overflow-hidden cursor-pointer" onClick={() => onProductSelect(product)}>
         <img src={product.images[0]} alt={product.name} className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300" />
+        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300"></div>
         
         {/* Discount Badge */}
         {product.oldPrice && (
-            <span className="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">
+            <span className="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded z-10">
                 -{Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}%
             </span>
         )}
 
         {/* Wishlist and Quick View Buttons */}
-        <div className="absolute top-3 right-3 flex flex-col space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <div className="absolute top-3 right-3 flex flex-col space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
           <button 
             className="bg-gym-darker bg-opacity-70 p-2 rounded-full text-white hover:text-gym-yellow hover:bg-opacity-90 transition-all"
             title="Add to Wishlist"

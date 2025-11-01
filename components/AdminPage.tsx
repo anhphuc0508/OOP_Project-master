@@ -66,11 +66,14 @@ const navItems = [
 ];
 
 export interface ProductFormData {
+    sku: string;
     name: string;
     price: number;
     stock: number;
     image: string;
     category: string;
+    description: string;
+    subCategory?: string;
 }
 
 interface AdminPageProps {
@@ -200,6 +203,7 @@ const ProductManagementView: React.FC<{
                     <thead className="text-xs text-[var(--admin-text-secondary)] uppercase border-b border-[var(--admin-border-color)]">
                       <tr>
                         <th scope="col" className="px-6 py-3">Tên sản phẩm</th>
+                        <th scope="col" className="px-6 py-3">SKU</th>
                         <th scope="col" className="px-6 py-3">Danh mục</th>
                         <th scope="col" className="px-6 py-3">Giá</th>
                         <th scope="col" className="px-6 py-3">Tồn kho</th>
@@ -214,6 +218,7 @@ const ProductManagementView: React.FC<{
                             <img src={product.images[0]} alt={product.name} className="w-10 h-10 rounded-md object-cover"/>
                             <span>{product.name}</span>
                           </td>
+                          <td className="px-6 py-4 font-mono">{product.sku}</td>
                           <td className="px-6 py-4">{product.category}</td>
                           <td className="px-6 py-4">{product.price.toLocaleString('vi-VN')}₫</td>
                           <td className="px-6 py-4">{product.total || 0}</td>
@@ -396,18 +401,21 @@ const AdminPage: React.FC<AdminPageProps> = ({ currentUser, onLogout, onViewSite
 
   const handleAddProduct = (formData: ProductFormData) => {
     const newProduct: Product = {
-        id: Date.now(),
-        name: formData.name,
-        images: [formData.image],
-        price: formData.price,
-        category: formData.category,
-        brand: 'GymSup', // Default brand
-        inStock: formData.stock > 0,
-        description: `Newly added: ${formData.name}`,
-        rating: 0,
-        reviews: 0,
-        sold: 0,
-        total: formData.stock,
+      id: Date.now(),
+      sku: formData.sku,
+      name: formData.name,
+      images: [formData.image],
+      price: formData.price,
+      category: formData.category,
+      subCategory: formData.subCategory,
+      brand: 'GymSup', // Default brand
+      inStock: formData.stock > 0,
+      description: formData.description,
+      rating: 0,
+      reviews: 0,
+      sold: 0,
+      total: formData.stock,
+      variants: []
     };
     onAddProduct(newProduct);
     handleCloseModal();
@@ -428,12 +436,15 @@ const AdminPage: React.FC<AdminPageProps> = ({ currentUser, onLogout, onViewSite
 
     const updatedProduct: Product = {
       ...productToEdit,
+      sku: formData.sku,
       name: formData.name,
       price: formData.price,
       total: formData.stock,
       inStock: formData.stock > 0,
       images: [formData.image],
       category: formData.category,
+      subCategory: formData.subCategory,
+      description: formData.description,
     };
 
     onUpdateProduct(updatedProduct);

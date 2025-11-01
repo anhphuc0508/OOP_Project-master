@@ -10,35 +10,59 @@ interface AddProductModalProps {
   productToEdit: Product | null;
 }
 
+const subCategoryMap: { [key: string]: string[] } = {
+  "Whey Protein": [
+    "Whey Protein Blend",
+    "Whey Protein Isolate",
+    "Hydrolyzed Whey",
+    "Vegan Protein",
+    "Protein Bar",
+    "Meal Replacements",
+  ],
+};
+
 const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClose, onAddProduct, onUpdateProduct, productToEdit }) => {
+  const [sku, setSku] = useState('');
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [stock, setStock] = useState('');
   const [image, setImage] = useState('');
   const [category, setCategory] = useState('');
+  const [subCategory, setSubCategory] = useState('');
+  const [description, setDescription] = useState('');
   const [error, setError] = useState('');
 
   const isEditMode = !!productToEdit;
 
   useEffect(() => {
-    // Populate form if in edit mode, otherwise reset it
     if (isOpen) {
         if (isEditMode && productToEdit) {
+            setSku(productToEdit.sku || '');
             setName(productToEdit.name);
             setPrice(String(productToEdit.price));
             setStock(String(productToEdit.total || 0));
             setImage(productToEdit.images[0] || '');
             setCategory(productToEdit.category);
+            setSubCategory(productToEdit.subCategory || '');
+            setDescription(productToEdit.description || '');
         } else {
+            setSku('');
             setName('');
             setPrice('');
             setStock('');
             setImage('');
             setCategory('');
+            setSubCategory('');
+            setDescription('');
         }
-        setError(''); // Always clear previous errors
+        setError('');
     }
   }, [isOpen, productToEdit, isEditMode]);
+
+  useEffect(() => {
+    // Reset subCategory when category changes
+    setSubCategory('');
+  }, [category]);
 
   if (!isOpen) {
     return null;
@@ -47,69 +71,30 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClose, onAd
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 1. Name validation
-    if (!name.trim()) {
-      setError('Tên sản phẩm là bắt buộc.');
-      return;
-    }
-
-    // 2. Price validation
-    if (!price.trim()) {
-      setError('Giá sản phẩm là bắt buộc.');
-      return;
-    }
+    if (!sku.trim()) { setError('SKU sản phẩm là bắt buộc.'); return; }
+    if (!name.trim()) { setError('Tên sản phẩm là bắt buộc.'); return; }
+    if (!price.trim()) { setError('Giá sản phẩm là bắt buộc.'); return; }
     const priceNum = parseFloat(price);
-    if (isNaN(priceNum)) {
-      setError('Giá phải là một số hợp lệ.');
-      return;
-    }
-    if (priceNum <= 0) {
-      setError('Giá phải là một số dương.');
-      return;
-    }
-
-    // 3. Stock validation
-    if (!stock.trim()) {
-      setError('Số lượng tồn kho là bắt buộc.');
-      return;
-    }
+    if (isNaN(priceNum) || priceNum <= 0) { setError('Giá phải là một số dương hợp lệ.'); return; }
+    if (!stock.trim()) { setError('Số lượng tồn kho là bắt buộc.'); return; }
     const stockNum = parseFloat(stock);
-    if (isNaN(stockNum) || !Number.isInteger(stockNum)) {
-      setError('Tồn kho phải là một số nguyên (ví dụ: 10, 25, 100).');
-      return;
-    }
-    if (stockNum < 0) {
-      setError('Tồn kho không thể là số âm.');
-      return;
-    }
+    if (isNaN(stockNum) || !Number.isInteger(stockNum) || stockNum < 0) { setError('Tồn kho phải là một số nguyên không âm.'); return; }
+    if (!image.trim()) { setError('URL hình ảnh là bắt buộc.'); return; }
+    try { new URL(image.trim()); } catch (_) { setError('Vui lòng nhập URL hình ảnh hợp lệ.'); return; }
+    if (!category) { setError('Vui lòng chọn một danh mục sản phẩm.'); return; }
+    if (!description.trim()) { setError('Mô tả sản phẩm là bắt buộc.'); return; }
 
-    // 4. Image URL validation
-    if (!image.trim()) {
-      setError('URL hình ảnh là bắt buộc.');
-      return;
-    }
-    try {
-      new URL(image.trim());
-    } catch (_) {
-      setError('Vui lòng nhập URL hình ảnh hợp lệ (ví dụ: https://example.com/image.png).');
-      return;
-    }
-
-    // 5. Category validation
-    if (!category) {
-        setError('Vui lòng chọn một danh mục sản phẩm.');
-        return;
-    }
-
-    // If all validation passes, clear error and submit
     setError('');
 
     const productData: ProductFormData = {
+      sku: sku.trim(),
       name: name.trim(),
       price: priceNum,
       stock: stockNum,
       image: image.trim(),
       category: category,
+      subCategory: subCategory,
+      description: description.trim(),
     };
 
     if (isEditMode) {
@@ -134,7 +119,11 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClose, onAd
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="productName" className="block text-sm font-medium text-[var(--admin-text-secondary)] mb-1">Tên sản phẩm</label>
-            <input type="text" id="productName" value={name} onChange={e => setName(e.target.value)} className={inputStyles} />
+            <input type="text" id="productName" value={name} onChange={e => setName(e.target.value)} className={inputStyles} placeholder="ví dụ: Optimum Nutrition Gold Standard 100% Whey" />
+          </div>
+          <div>
+              <label htmlFor="productSku" className="block text-sm font-medium text-[var(--admin-text-secondary)] mb-1">ID (SKU)</label>
+              <input type="text" id="productSku" value={sku} onChange={e => setSku(e.target.value)} className={inputStyles} placeholder="ví dụ: ON-GSW-5LB" />
           </div>
           <div>
             <label htmlFor="productCategory" className="block text-sm font-medium text-[var(--admin-text-secondary)] mb-1">Danh mục</label>
@@ -147,17 +136,34 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClose, onAd
                 <option value="Phụ kiện">Phụ kiện</option>
             </select>
           </div>
-          <div>
-            <label htmlFor="productPrice" className="block text-sm font-medium text-[var(--admin-text-secondary)] mb-1">Giá (đ)</label>
-            <input type="text" id="productPrice" value={price} onChange={e => setPrice(e.target.value)} className={inputStyles} placeholder="ví dụ: 1850000" />
-          </div>
-          <div>
-            <label htmlFor="productStock" className="block text-sm font-medium text-[var(--admin-text-secondary)] mb-1">Tồn kho</label>
-            <input type="text" id="productStock" value={stock} onChange={e => setStock(e.target.value)} className={inputStyles} placeholder="ví dụ: 150"/>
+          {subCategoryMap[category] && (
+            <div>
+              <label htmlFor="productSubCategory" className="block text-sm font-medium text-[var(--admin-text-secondary)] mb-1">Loại (nếu có)</label>
+              <select id="productSubCategory" value={subCategory} onChange={e => setSubCategory(e.target.value)} className={inputStyles}>
+                <option value="">Chọn loại sản phẩm</option>
+                {subCategoryMap[category].map(sub => (
+                  <option key={sub} value={sub}>{sub}</option>
+                ))}
+              </select>
+            </div>
+          )}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="productPrice" className="block text-sm font-medium text-[var(--admin-text-secondary)] mb-1">Giá (đ)</label>
+              <input type="text" id="productPrice" value={price} onChange={e => setPrice(e.target.value)} className={inputStyles} placeholder="ví dụ: 1850000" />
+            </div>
+            <div>
+              <label htmlFor="productStock" className="block text-sm font-medium text-[var(--admin-text-secondary)] mb-1">Tồn kho</label>
+              <input type="text" id="productStock" value={stock} onChange={e => setStock(e.target.value)} className={inputStyles} placeholder="ví dụ: 150"/>
+            </div>
           </div>
           <div>
             <label htmlFor="productImage" className="block text-sm font-medium text-[var(--admin-text-secondary)] mb-1">URL hình ảnh</label>
             <input type="text" id="productImage" value={image} onChange={e => setImage(e.target.value)} className={inputStyles} placeholder="https://example.com/image.png" />
+          </div>
+          <div>
+            <label htmlFor="productDescription" className="block text-sm font-medium text-[var(--admin-text-secondary)] mb-1">Mô tả</label>
+            <textarea id="productDescription" value={description} onChange={e => setDescription(e.target.value)} rows={4} className={inputStyles} placeholder="Viết mô tả chi tiết cho sản phẩm..."></textarea>
           </div>
           
           {error && <p className="text-red-500 text-sm text-center pt-2">{error}</p>}

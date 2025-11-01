@@ -28,7 +28,7 @@ export const ResetIcon: React.FC<{ className?: string }> = ({ className }) => (
     </svg>
 );
 
-// Dữ liệu navLinks (Giữ nguyên)
+// Dữ liệu navLinks (Phiên bản đơn giản)
 export const navLinks: NavLink[] = [
     {
       label: "Trang chủ",
@@ -85,7 +85,7 @@ export const navLinks: NavLink[] = [
     },
   ];
 
-// Dữ liệu brands (Giữ nguyên)
+// Dữ liệu brands
 export const brands: Brand[] = [
     { id: 1, name: 'Optimum Nutrition', logo: 'https://cdn.hpm.io/wp-content/uploads/2019/06/25133501/ON_logo_black.png' },
     { id: 2, name: 'Myprotein', logo: 'https://static.thcdn.com/www/common/images/logos/logo-myprotein.svg' },
@@ -99,7 +99,7 @@ export const brands: Brand[] = [
     { id: 10, name: 'GymSup', logo: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgNDAiPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgc3R5bGU9ImZvbnQtd2VpZ2h0OmJvbGQ7ZmlsbDojZmZmIj5HWU1TVVA8L3RleHQ+PC9zdmc+' },
 ];
 
-// Dữ liệu sort options (Giữ nguyên)
+// Dữ liệu sort options
 export const SORT_OPTIONS: SortOption[] = [
     { value: 'default', label: 'Mặc định' },
     { value: 'popularity', label: 'Phổ biến nhất' },
@@ -107,8 +107,7 @@ export const SORT_OPTIONS: SortOption[] = [
     { value: 'price-desc', label: 'Giá: Cao đến thấp' },
 ];
 
-// --- SỬA LỖI Ở ĐÂY ---
-// 'allProducts' BẮT BUỘC phải chứa 'variants'
+// --- DỮ LIỆU SẢN PHẨM VỚI 'VARIANTS' ---
 export const allProducts: Product[] = [
     {
       id: 1,
@@ -289,7 +288,7 @@ export const trendingProducts = allProducts.slice(0, 4);
 export const wheyProducts = allProducts.filter(p => p.category === 'Whey Protein').slice(0, 6);
 export const strengthProducts = allProducts.filter(p => p.category === 'Tăng sức mạnh').slice(0, 6);
 
-// Dữ liệu articles (Giữ nguyên)
+// Dữ liệu articles
 export const supplementArticles: Article[] = [
     { id: 1, title: 'Whey Protein là gì? Tác dụng và cách dùng hiệu quả', date: '15/07/2023', snippet: 'Tìm hiểu sâu về Whey Protein, lợi ích đối với người tập gym và cách sử dụng để tối ưu hóa sự phát triển cơ bắp.', image: 'https://picsum.photos/seed/article1/400/200', category: 'Kiến thức Supplement' },
     { id: 2, title: 'Creatine: "Vua" của các loại thực phẩm bổ sung tăng sức mạnh', date: '12/07/2023', snippet: 'Creatine đã được chứng minh là một trong những chất bổ sung hiệu quả nhất để tăng cường sức mạnh và hiệu suất tập luyện.', image: 'https://picsum.photos/seed/article2/400/200', category: 'Kiến thức Supplement' },
