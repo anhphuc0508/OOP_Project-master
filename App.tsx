@@ -1,11 +1,10 @@
-// File: App.tsx
+// File: App.tsx (Đã sửa dứt điểm tất cả lỗi)
 import React, { useState, useCallback, useEffect } from 'react';
-import api from './lib/axios';
+import api from './lib/axios'; // Đảm bảo import từ file mới
 import { CartProvider } from './contexts/CartContext';
-// Sửa: Thêm 'UserResponse' (DTO từ backend)
 import { Product, Theme, User, Order, OrderStatus, CartItem, UserResponse , CreateProductRequest} from './types';
 import Header from './components/Header';
-import Footer from './components/Footer';
+import Footer from './components/Footer'; 
 import HomePage from './components/HomePage';
 import ProductPage from './components/ProductPage';
 import CategoryPage from './components/CategoryPage';
@@ -20,13 +19,52 @@ import AdminPage from './components/AdminPage';
 import AccountPage from './components/AccountPage';
 import OrderHistoryPage from './components/OrderHistoryPage';
 
+// 1. HÀM MAP (BÊN NGOÀI COMPONENT APP) - ĐÃ SỬA LỖI TERNARY VÀ ÉP KIỂU
+const mapProductResponseToProduct = (res: any): Product => {
+  const firstVariant = res.variants?.[0];
+  
+  // === SỬA LỖI Ở ĐÂY ===
+  // Bổ sung ? (nếu có res.variants) và : [] (nếu không có) VÀ ép kiểu (as string)
+  const allFlavors: string[] = res.variants 
+  ? [...new Set<string>(res.variants.map((v: any) => v.flavor as string).filter(Boolean))] 
+  : [];
 
+const allSizes: string[] = res.variants 
+  ? [...new Set<string>(res.variants.map((v: any) => v.size as string).filter(Boolean))] 
+  : [];
 
+  const categoryId = res.category?.categoryId || 0; 
+  const brandId = res.brand?.brandId || 0;
+
+  return {
+    id: res.productId,
+    name: res.name,
+    description: res.description,
+    category: res.categoryName, 
+    brand: res.brandName,
+    variants: res.variants || [],
+    price: firstVariant?.price || 0,
+    oldPrice: firstVariant?.oldPrice || undefined,
+    sku: firstVariant?.sku || 'N/A',
+    inStock: (firstVariant?.stockQuantity || 0) > 0,
+    stock_quantity: firstVariant?.stockQuantity || 0,
+    images: [`https://picsum.photos/seed/product${res.productId}/400/400`],
+    rating: 0, 
+    reviews: 0,
+    sold: 0,
+    
+    // Thêm lại 2 dòng này
+    flavors: allFlavors,
+    sizes: allSizes,
+
+    categoryId: categoryId, // Dùng để sửa (number)
+    brandId: brandId,
+  };
+};
 
 
 // --- Mock Data (Giữ nguyên code mock của bạn) ---
 const product1 = initialProducts.find(p => p.id === 1)!;
-// ... (code mock data khác)
 const product1_variant = product1.variants.find(v => v.flavor === 'Double Rich Chocolate' && v.size === '5Lbs')!;
 const product7 = initialProducts.find(p => p.id === 7)!;
 const product7_variant = product7.variants.find(v => v.flavor === 'Icy Blue Razz')!;
@@ -95,8 +133,9 @@ type Page = 'home' | 'product' | 'category' | 'checkout' | 'brands' | 'account' 
 
 const App: React.FC = () => {
   const [page, setPage] = useState<Page>('home');
-  const [products, setProducts] = useState<Product[]>(initialProducts);
-  const [orders, setOrders] = useState<Order[]>(initialOrders);
+  // SỬA LỖI 1: Khởi tạo mảng rỗng
+  const [products, setProducts] = useState<Product[]>([]);
+  const [orders, setOrders] = useState<Order[]>(initialOrders); 
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
@@ -111,7 +150,23 @@ const App: React.FC = () => {
     // ... (theme useEffect giữ nguyên)
   }, [theme, currentUser, isAdminViewingSite]);
 
-  // useEffect khôi phục đăng nhập (Logic chuẩn)
+  
+  // SỬA LỖI 2: Hàm fetchProducts phải gọi setProducts
+  const fetchProducts = useCallback(async () => {
+    try {
+      const res = await api.get('/products');
+      console.log("Đã tải lại products:", res.data);
+      
+      const mappedProducts = res.data.map(mapProductResponseToProduct);
+      setProducts(mappedProducts); // Bỏ comment dòng này
+
+    } catch (err: any) {
+      console.error("Lỗi tải lại products:", err);
+    }
+  }, []); 
+
+
+  // SỬA LỖI 3: useEffect khởi động phải gọi fetchProducts
   useEffect(() => {
     const token = localStorage.getItem('token');
     const userJson = localStorage.getItem('user'); 
@@ -130,9 +185,14 @@ const App: React.FC = () => {
         localStorage.removeItem('user');
       }
     }
-  }, []); 
 
-  // Xử lý đăng nhập (Logic chuẩn)
+    // GỌI HÀM NÀY KHI APP MỞ LÊN
+    fetchProducts(); 
+    
+  }, [fetchProducts]); // Thêm fetchProducts vào dependency array
+
+
+  // Xử lý đăng nhập
   const handleLoginSuccess = useCallback((userResponse: UserResponse) => { 
     localStorage.setItem('user', JSON.stringify(userResponse));
     const userRole = userResponse.role as ('USER' | 'ADMIN');
@@ -146,7 +206,7 @@ const App: React.FC = () => {
     }
   }, []);
 
-  // Logout (Xóa cả user)
+  // Logout
   const handleLogout = useCallback(() => {
     localStorage.removeItem('token');
     localStorage.removeItem('user'); 
@@ -155,60 +215,41 @@ const App: React.FC = () => {
     setIsAdminViewingSite(false);
   }, []);
 
-  // --- (SỬA LỖI URL BỊ LẶP) ---
-  const fetchProducts = useCallback(async () => {
-    try {
-      // SỬA: Xóa '/api/v1'
-      const res = await api.get('/products');
-      console.log("Đã tải lại products:", res.data);
-      // (TODO: Cần map res.data (ProductResponse[]) sang Product[] (type của frontend))
-      // setProducts(res.data.map(mapProductResponseToProduct));
-    } catch (err: any) {
-      console.error("Lỗi tải lại products:", err);
-    }
-  }, []);
-
-  // --- SỬA LỖI URL BỊ LẶP ---
+  
+  // Logic gọi API (Đã đúng)
   const handleAddProduct = useCallback(async (request: CreateProductRequest) => {
     try {
-      // SỬA: Xóa '/api/v1'
-      await api.post('/products', request);
+      await api.post('/products', request); 
       alert('Thêm sản phẩm thành công!');
       await fetchProducts(); 
     } catch (err: any) {
       console.error("Lỗi Thêm sản phẩm:", err);
-      // (Lỗi 403 bạn thấy ở đây là do backend,
-      //  hàm getAuthorities trong User.java bị NullPointer)
-      alert("LỖI: " + err.response?.data?.message || err.message);
+      alert("LỖI: " + (err as any).response?.data?.message || (err as any).message);
     }
   }, [fetchProducts]);
 
-  // --- SỬA LỖI URL BỊ LẶP ---
   const handleUpdateProduct = useCallback(async (productId: number, request: CreateProductRequest) => {
     try {
-      // SỬA: Xóa '/api/v1'
       await api.put(`/products/${productId}`, request);
       alert('Cập nhật thành công!');
       await fetchProducts(); 
     } catch (err: any) {
       console.error("Lỗi Cập nhật sản phẩm:", err);
-      alert("LỖI: " + err.response?.data?.message || err.message);
+      alert("LỖI: " + (err as any).response?.data?.message || (err as any).message);
     }
   }, [fetchProducts]);
 
-  // --- SỬA LỖI URL BỊ LẶP ---
   const handleDeleteProduct = useCallback(async (productId: number) => {
     if (!window.confirm("Bạn có chắc chắn muốn XÓA sản phẩm này không?")) {
       return;
     }
     
     try {
-      // SỬA: Xóa '/api/v1'
       await api.delete(`/products/${productId}`);
       setProducts(prevProducts => prevProducts.filter(p => p.id !== productId));
     } catch (err: any) {
       console.error("Lỗi Xóa sản phẩm:", err);
-      alert("LỖI: " + err.response?.data?.message || err.message);
+      alert("LỖI: " + (err as any).response?.data?.message || (err as any).message);
     }
   }, []);
   
@@ -218,7 +259,7 @@ const App: React.FC = () => {
     const newOrder: Order = {
       ...orderDetails,
       id: `GS${Math.floor(Math.random() * 90000) + 10000}`,
-      date: new Date().toLocaleDateString('vi-VN'),
+      date: new Date().toLocaleString('vi-VN'),
       status: 'Đang xử lý',
     };
     setOrders(prevOrders => [newOrder, ...prevOrders]);
@@ -335,9 +376,9 @@ const App: React.FC = () => {
         onLogout={handleLogout}
         onViewSite={handleAdminViewSite}
         products={products}
-        onAddProduct={handleAddProduct} // Truyền hàm MỚI
-        onUpdateProduct={handleUpdateProduct} // Truyền hàm MỚI
-        onDeleteProduct={handleDeleteProduct} // Truyền hàm MỚI
+        onAddProduct={handleAddProduct}
+        onUpdateProduct={handleUpdateProduct}
+        onDeleteProduct={handleDeleteProduct}
         orders={orders}
         onUpdateOrderStatus={handleUpdateOrderStatus}
     />;

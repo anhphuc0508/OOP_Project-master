@@ -35,6 +35,8 @@ export interface Product {
   subCategory?: string;
   sold: number;
   stock_quantity: number;
+  categoryId?: number;
+  brandId?: number;
 }
 // --- SỬA LỖI LOGIC Ở ĐÂY ---
 // CartItem không nên kế thừa (extends) Product.
@@ -49,6 +51,7 @@ export interface CartItem {
   sku: string;
   size?: string;   // Thêm '?' để nó là optional
   flavor?: string;
+
 }
 
 export interface Brand {

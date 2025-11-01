@@ -1,12 +1,13 @@
-// src/components/admin/AddProductModal.tsx
+// src/components/admin/AddProductModal.tsx (Đã sửa)
 import React, { useState, useEffect } from 'react';
-import { Product } from '../types';
+import { Product, CreateProductRequest } from '../types'; // Thêm CreateProductRequest
 
 interface AddProductModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddProduct: (product: any) => void;
-  onUpdateProduct: (product: any) => void;
+  // Sửa 2 dòng này: Giờ chúng ta nhận payload chuẩn
+  onAddProduct: (request: CreateProductRequest) => void; 
+  onUpdateProduct: (productId: number, request: CreateProductRequest) => void;
   productToEdit: Product | null;
 }
 
@@ -32,10 +33,10 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [stock, setStock] = useState('');
-  const [image, setImage] = useState('');
+  const [image, setImage] = useState(''); // Tạm thời giữ lại, dù backend không dùng
   const [categoryId, setCategoryId] = useState<number>(0);
   const [brandId, setBrandId] = useState<number>(0);
-  const [subCategory, setSubCategory] = useState('');
+  const [subCategory, setSubCategory] = useState(''); // Tạm thời giữ lại, dù backend không dùng
   const [description, setDescription] = useState('');
   const [error, setError] = useState('');
 
@@ -46,13 +47,15 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       if (isEditMode && productToEdit) {
-        setSku(productToEdit.sku || '');
+        // Lấy thông tin từ variant ĐẦU TIÊN (để sửa)
+        const variant = productToEdit.variants?.[0];
+        setSku(variant?.sku || productToEdit.sku || '');
         setName(productToEdit.name);
-        setPrice(String(productToEdit.price));
-        setStock(String(productToEdit.total || 0));
+        setPrice(String(variant?.price || productToEdit.price));
+        setStock(String(variant?.stockQuantity || productToEdit.stock_quantity || 0));
         setImage(productToEdit.images[0] || '');
-        setCategoryId(productToEdit.categoryId || 0);
-        setBrandId(productToEdit.brandId || 0);
+        setCategoryId(productToEdit.categoryId || 0); // Sửa: Dùng ID
+        setBrandId(productToEdit.brandId || 0);     // Sửa: Dùng ID
         setSubCategory(productToEdit.subCategory || '');
         setDescription(productToEdit.description || '');
       } else {
@@ -69,14 +72,16 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       setError('');
     }
   }, [isOpen, productToEdit, isEditMode]);
-
+  
+  // (useEffect phụ thuộc categoryId giữ nguyên)
   useEffect(() => {
     setSubCategory('');
   }, [categoryId]);
 
+
   if (!isOpen) return null;
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -84,47 +89,38 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
     if (!name.trim()) return setError('Tên sản phẩm là bắt buộc.');
     if (!price.trim() || isNaN(Number(price))) return setError('Giá phải là số hợp lệ.');
     if (!stock.trim() || isNaN(Number(stock))) return setError('Tồn kho phải là số hợp lệ.');
-    if (!image.trim()) return setError('URL hình ảnh là bắt buộc.');
     if (categoryId === 0) return setError('Chọn danh mục.');
     if (brandId === 0) return setError('Chọn thương hiệu.');
 
-    const payload = {
+    // Xây dựng payload GIỐNG HỆT CreateProductRequest.java
+    const payload: CreateProductRequest = {
       name,
       description,
       categoryId,
       brandId,
-      variants: [
+      variants: [ // Gửi 1 variant duy nhất dựa trên form
         {
-          name: `${name} - ${subCategory || 'Default'}`,
-          sku,
+          name: `${name} - ${subCategory || 'Default'}`, // Tên variant
+          sku: sku,
           price: Number(price),
-          salePrice: null,
+          salePrice: undefined, // Backend có thể xử lý null/undefined
           stockQuantity: Number(stock),
         },
       ],
     };
 
+    // XÓA TẤT CẢ LOGIC FETCH CŨ
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:8080/api/v1/products', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.message || 'Lỗi thêm sản phẩm');
+      if (isEditMode && productToEdit) {
+        // Gửi payload lên App.tsx
+        onUpdateProduct(productToEdit.id, payload);
+      } else {
+        // Gửi payload lên App.tsx
+        onAddProduct(payload);
       }
-
-      const data = await res.json();
-      onAddProduct(data);
-      onClose();
+      onClose(); // Đóng modal ngay lập tức
     } catch (err: any) {
-      setError(err.message || 'Lỗi kết nối');
+      setError(err.message || 'Lỗi không xác định');
     }
   };
 
@@ -162,7 +158,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
               <div>
                 <label className="block text-sm font-medium text-[var(--admin-text-secondary)] mb-1">Thương hiệu</label>
                 <select value={brandId} onChange={e => setBrandId(Number(e.target.value))} className={inputStyles}>
-                  <option value={""}>Chọn thương hiệu</option>
+                  <option value={0}>Chọn thương hiệu</option>
                   <option value={1}>Optimum Nutrition</option>
                   <option value={2}>C4</option>
                   <option value={3}>MyProtein</option>
@@ -195,8 +191,8 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
             </div>
 
             <div className="mt-4">
-              <label className="block text-sm font-medium text-[var(--admin-text-secondary)] mb-1">URL hình ảnh</label>
-              <input type="text" value={image} onChange={e => setImage(e.target.value)} className={inputStyles} placeholder="https://example.com/image.png" required />
+              <label className="block text-sm font-medium text-[var(--admin-text-secondary)] mb-1">URL hình ảnh (Tạm thời)</label>
+              <input type="text" value={image} onChange={e => setImage(e.target.value)} className={inputStyles} placeholder="https://example.com/image.png" />
             </div>
 
             <div className="mt-4">

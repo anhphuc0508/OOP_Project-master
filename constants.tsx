@@ -1,5 +1,6 @@
+// File: src/constants.tsx (Đã sửa lỗi import và bổ sung code bị thiếu)
 import React from 'react';
-// Đảm bảo file 'types.ts' đã được sửa và có 'Product' và 'ProductVariant'
+// SỬA LỖI 1: Bổ sung import các types
 import { Product, Brand, Article, NavLink, SortOption } from './types';
 
 // FIX: Added SVG icon components that were missing.
@@ -28,64 +29,64 @@ export const ResetIcon: React.FC<{ className?: string }> = ({ className }) => (
     </svg>
 );
 
-// Dữ liệu navLinks (Phiên bản đơn giản)
+// SỬA LỖI 2: Thêm lại 'navLinks' (đã bị xóa)
 export const navLinks: NavLink[] = [
     {
-      label: "Trang chủ",
-      href: "#",
+        label: "Trang chủ",
+        href: "#",
     },
     {
-      label: "Whey Protein",
-      href: "#",
-      megaMenu: [
-        {
-          title: "Tăng cơ",
-          links: [
-            { label: "Whey Protein Blend", href: "#", category: "Whey Protein" },
-            { label: "Whey Protein Isolate", href: "#", category: "Whey Protein" },
-            { label: "Hydrolyzed Whey", href: "#", category: "Whey Protein" },
-            { label: "Vegan Protein", href: "#", category: "Whey Protein" },
-          ],
-        },
-        {
-          title: "Dạng sản phẩm",
-          links: [
-              { label: "Protein Bar", href: "#", category: "Whey Protein" },
-              { label: "Dạng bột", href: "#", category: "Whey Protein" },
-          ],
-        },
-        {
-            title: "Mục tiêu",
-            links: [
-                { label: "Tăng cơ giảm mỡ", href: "#", category: "Whey Protein" },
-                { label: "Bổ sung Protein", href: "#", category: "Whey Protein" },
-            ],
-        },
-      ],
+        label: "Whey Protein",
+        href: "#",
+        megaMenu: [
+            {
+                title: "Tăng cơ",
+                links: [
+                    { label: "Whey Protein Blend", href: "#", category: "Whey Protein" },
+                    { label: "Whey Protein Isolate", href: "#", category: "Whey Protein" },
+                    { label: "Hydrolyzed Whey", href: "#", category: "Whey Protein" },
+                    { label: "Vegan Protein", href: "#", category: "Whey Protein" },
+                ],
+            },
+            {
+                title: "Dạng sản phẩm",
+                links: [
+                    { label: "Protein Bar", href: "#", category: "Whey Protein" },
+                    { label: "Dạng bột", href: "#", category: "Whey Protein" },
+                ],
+            },
+            {
+                title: "Mục tiêu",
+                links: [
+                    { label: "Tăng cơ giảm mỡ", href: "#", category: "Whey Protein" },
+                    { label: "Bổ sung Protein", href: "#", category: "Whey Protein" },
+                ],
+            },
+        ],
     },
     {
-      label: "Tăng cân",
-      href: "#",
+        label: "Tăng cân",
+        href: "#",
     },
     {
-      label: "Tăng sức mạnh",
-      href: "#",
+        label: "Tăng sức mạnh",
+        href: "#",
     },
     {
-      label: "Hỗ trợ sức khỏe",
-      href: "#",
+        label: "Hỗ trợ sức khỏe",
+        href: "#",
     },
     {
-      label: "Phụ kiện",
-      href: "#",
+        label: "Phụ kiện",
+        href: "#",
     },
     {
-      label: "Thương hiệu",
-      href: "#",
+        label: "Thương hiệu",
+        href: "#",
     },
-  ];
+];
 
-// Dữ liệu brands
+// SỬA LỖI 3: Thêm lại 'brands' (đã bị xóa)
 export const brands: Brand[] = [
     { id: 1, name: 'Optimum Nutrition', logo: 'https://cdn.hpm.io/wp-content/uploads/2019/06/25133501/ON_logo_black.png' },
     { id: 2, name: 'Myprotein', logo: 'https://static.thcdn.com/www/common/images/logos/logo-myprotein.svg' },
@@ -99,7 +100,7 @@ export const brands: Brand[] = [
     { id: 10, name: 'GymSup', logo: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgNDAiPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgc3R5bGU9ImZvbnQtd2VpZ2h0OmJvbGQ7ZmlsbDojZmZmIj5HWU1TVVA8L3RleHQ+PC9zdmc+' },
 ];
 
-// Dữ liệu sort options
+// Thêm lại 'SORT_OPTIONS'
 export const SORT_OPTIONS: SortOption[] = [
     { value: 'default', label: 'Mặc định' },
     { value: 'popularity', label: 'Phổ biến nhất' },
@@ -108,6 +109,7 @@ export const SORT_OPTIONS: SortOption[] = [
 ];
 
 // --- DỮ LIỆU SẢN PHẨM VỚI 'VARIANTS' ---
+// (Đây là code tôi đã sửa lỗi 'sold' và 'stock_quantity' trước đó)
 export const allProducts: Product[] = [
     {
       id: 1,
@@ -122,25 +124,23 @@ export const allProducts: Product[] = [
       category: 'Whey Protein',
       brand: 'Optimum Nutrition',
       
-      // Giữ lại 2 mảng này cho UI (các nút)
       flavors: ['Double Rich Chocolate', 'Vanilla Ice Cream', 'Mocha Cappuccino'],
       sizes: ['5Lbs', '10Lbs'],
-
-      // BẮT BUỘC THÊM MẢNG NÀY (để fix lỗi .find())
+      sold: 1250, 
+      stock_quantity: 100,
       variants: [
         {
           variantId: 101, name: 'Double Rich Chocolate 5Lbs',
-          sku: 'GSW-CHOCO-5LB', // <- SKU để gửi đi
+          sku: 'GSW-CHOCO-5LB',
           price: 1850000, oldPrice: 2200000, stockQuantity: 100,
           flavor: 'Double Rich Chocolate', size: '5Lbs'
         },
-        {
+         {
           variantId: 102, name: 'Vanilla Ice Cream 5Lbs',
           sku: 'GSW-VANI-5LB',
           price: 1850000, oldPrice: 2200000, stockQuantity: 80,
           flavor: 'Vanilla Ice Cream', size: '5Lbs'
         },
-        
         {
           variantId: 104, name: 'Double Rich Chocolate 10Lbs',
           sku: 'GSW-CHOCO-10LB',
@@ -150,21 +150,21 @@ export const allProducts: Product[] = [
         {
         variantId: 10, name: 'Gold Standard 10Lbs Vani',
         sku: 'GSW-VANI-10LB',
-        price: 3500000, stockQuantity: 50, // Giả sử giá 10Lbs và tồn kho
+        price: 3500000, stockQuantity: 50,
         flavor: 'Vanilla Ice Cream',
         size: '10Lbs'
       },
       {
         variantId: 11, name: 'Gold Standard 5Lbs Mocha',
         sku: 'GSW-MOCHA-5LB',
-        price: 1850000, stockQuantity: 70, // Giả sử giá 5Lbs và tồn kho
+        price: 1850000, stockQuantity: 70, 
         flavor: 'Mocha Cappuccino',
         size: '5Lbs'
       },
       {
         variantId: 12, name: 'Gold Standard 10Lbs Mocha',
         sku: 'GSW-MOCHA-10LB',
-        price: 3500000, stockQuantity: 30, // Giả sử giá 10Lbs và tồn kho
+        price: 3500000, stockQuantity: 30,
         flavor: 'Mocha Cappuccino',
         size: '10Lbs'
       }
@@ -185,24 +185,24 @@ export const allProducts: Product[] = [
       
       flavors: ['Chocolate Brownie', 'Salted Caramel', 'Unflavored'],
       sizes: ['5.5Lbs'],
-
-      // BẮT BUỘC THÊM MẢNG NÀY
+      sold: 850,
+      stock_quantity: 100,
       variants: [
         {
           variantId: 301, name: 'Chocolate Brownie 5.5Lbs',
-          sku: 'MP-ISO-CHOC-5.5', // <- SKU
+          sku: 'MP-ISO-CHOC-5.5',
           price: 1790000, oldPrice: 2000000, stockQuantity: 100,
           flavor: 'Chocolate Brownie', size: '5.5Lbs'
         },
         {
           variantId: 302, name: 'Salted Caramel 5.5Lbs',
-          sku: 'MP-ISO-SALT-5.5', // <- SKU
+          sku: 'MP-ISO-SALT-5.5',
           price: 1790000, oldPrice: 2000000, stockQuantity: 100,
           flavor: 'Salted Caramel', size: '5.5Lbs'
         },
         {
           variantId: 303, name: 'Unflavored 5.5Lbs',
-          sku: 'MP-ISO-UNFL-5.5', // <- SKU
+          sku: 'MP-ISO-UNFL-5.5',
           price: 1750000, stockQuantity: 50,
           flavor: 'Unflavored', size: '5.5Lbs'
         }
@@ -221,25 +221,25 @@ export const allProducts: Product[] = [
       brand: 'Nutrabolt (C4)',
       
       flavors: ['Icy Blue Razz', 'Fruit Punch', 'Watermelon'],
-      sizes: ['60 Servings'], // Giả sử chỉ có 1 size
-
-      // BẮT BUỘC THÊM MẢNG NÀY
+      sizes: ['60 Servings'], 
+      sold: 3200,
+      stock_quantity: 100,
       variants: [
         {
           variantId: 701, name: 'Icy Blue Razz 60 Servings',
-          sku: 'C4-ICY-60', // <- SKU
+          sku: 'C4-ICY-60',
           price: 950000, stockQuantity: 100,
           flavor: 'Icy Blue Razz', size: '60 Servings'
         },
         {
           variantId: 702, name: 'Fruit Punch 60 Servings',
-          sku: 'C4-FRUIT-60', // <- SKU
+          sku: 'C4-FRUIT-60',
           price: 950000, stockQuantity: 100,
           flavor: 'Fruit Punch', size: '60 Servings'
         },
         {
           variantId: 703, name: 'Watermelon 60 Servings',
-          sku: 'C4-WATER-60', // <- SKU
+          sku: 'C4-WATER-60',
           price: 950000, stockQuantity: 100,
           flavor: 'Watermelon', size: '60 Servings'
         }
@@ -258,25 +258,25 @@ export const allProducts: Product[] = [
         description: 'Serious Mass là sản phẩm tăng cân tối ưu, cung cấp 1250 calories, 50g protein, và hơn 250g carbohydrate mỗi liều dùng để hỗ trợ tăng cân và cơ bắp hiệu quả.',
         
         flavors: ['Chocolate', 'Vanilla', 'Banana'],
-        sizes: ['12Lbs'], // Giả sử chỉ có 1 size
-
-        // --- BẮT BUỘC THÊM MẢNG NÀY ---
+        sizes: ['12Lbs'],
+        sold: 2100,
+        stock_quantity: 100,
         variants: [
           {
             variantId: 501, name: 'Chocolate 12Lbs',
-            sku: 'ON-SM-CHOC-12', // <- SKU
+            sku: 'ON-SM-CHOC-12',
             price: 1650000, stockQuantity: 100,
             flavor: 'Chocolate', size: '12Lbs'
           },
           {
             variantId: 502, name: 'Vanilla 12Lbs',
-            sku: 'ON-SM-VANI-12', // <- SKU
+            sku: 'ON-SM-VANI-12',
             price: 1650000, stockQuantity: 100,
             flavor: 'Vanilla', size: '12Lbs'
           },
           {
             variantId: 503, name: 'Banana 12Lbs',
-            sku: 'ON-SM-BANA-12', // <- SKU
+            sku: 'ON-SM-BANA-12',
             price: 1650000, stockQuantity: 100,
             flavor: 'Banana', size: '12Lbs'
           }
@@ -284,11 +284,11 @@ export const allProducts: Product[] = [
     },
 ];
 
+// Thêm lại các export đã bị xóa
 export const trendingProducts = allProducts.slice(0, 4);
 export const wheyProducts = allProducts.filter(p => p.category === 'Whey Protein').slice(0, 6);
 export const strengthProducts = allProducts.filter(p => p.category === 'Tăng sức mạnh').slice(0, 6);
 
-// Dữ liệu articles
 export const supplementArticles: Article[] = [
     { id: 1, title: 'Whey Protein là gì? Tác dụng và cách dùng hiệu quả', date: '15/07/2023', snippet: 'Tìm hiểu sâu về Whey Protein, lợi ích đối với người tập gym và cách sử dụng để tối ưu hóa sự phát triển cơ bắp.', image: 'https://picsum.photos/seed/article1/400/200', category: 'Kiến thức Supplement' },
     { id: 2, title: 'Creatine: "Vua" của các loại thực phẩm bổ sung tăng sức mạnh', date: '12/07/2023', snippet: 'Creatine đã được chứng minh là một trong những chất bổ sung hiệu quả nhất để tăng cường sức mạnh và hiệu suất tập luyện.', image: 'https://picsum.photos/seed/article2/400/200', category: 'Kiến thức Supplement' },
