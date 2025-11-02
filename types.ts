@@ -34,7 +34,7 @@ export interface Product {
   sku?: string;
   subCategory?: string;
   sold: number;
-  stock_quantity: number;
+  stockQuantity: number;
   categoryId?: number;
   brandId?: number;
   

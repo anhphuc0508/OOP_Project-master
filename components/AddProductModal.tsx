@@ -53,7 +53,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           sku: v.sku,
           price: String(v.price),
           salePrice: String(v.oldPrice || ''),
-          stockQuantity: String(v.stock_quantity),
+          stockQuantity: String(v.stockQuantity),
         }));
 
         setVariantsState(variantsFromProduct);
@@ -365,7 +365,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                           handleVariantChange(index, 'stockQuantity', e.target.value)
                         }
                         className={smallInputStyles}
-                        placeholder="120"
+                        placeholder="0"
                         required
                       />
                     </div>
