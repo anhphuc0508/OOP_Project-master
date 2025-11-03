@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
 import { useCart } from '../contexts/CartContext';
-import { Order } from '../types';
-import api from '../lib/axios'; // 1. Import axios instance
+import api from '../lib/axios'; // Import axios instance
 
 interface CheckoutPageProps {
   onBackToShop: () => void;
-  // 2. Xóa prop onPlaceOrder vì component này sẽ tự gọi API
+  onOrderSuccess: () => void; // Thêm prop mới
 }
 
-const CheckoutPage: React.FC<CheckoutPageProps> = ({ onBackToShop }) => {
+const CheckoutPage: React.FC<CheckoutPageProps> = ({ onBackToShop, onOrderSuccess }) => {
   const { cartItems, itemCount, clearCart } = useCart();
   const [paymentMethod, setPaymentMethod] = useState<'cod' | 'card'>('cod');
 
-  // 3. Tách state cho địa chỉ (để khớp với CreateOrderRequest.java)
+  // Tách state cho địa chỉ (để khớp với CreateOrderRequest.java)
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState(''); // Vẫn giữ email (dù backend không yêu cầu)
   const [phone, setPhone] = useState('');
@@ -21,25 +20,25 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onBackToShop }) => {
   const [district, setDistrict] = useState(''); // MỚI
   const [city, setCity] = useState('');     // MỚI
 
-  const [isPlacingOrder, setIsPlacingOrder] = useState(false); // Thêm loading state
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false); 
 
   const subtotal: number = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
   const shippingFee: number = 0; 
   const total: number = subtotal + shippingFee;
 
-  // 4. Sửa lại hoàn toàn hàm handlePlaceOrder
+  // Sửa lại hoàn toàn hàm handlePlaceOrder
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isPlacingOrder) return;
     setIsPlacingOrder(true);
 
-    // 4a. Build payload items (chỉ variantId và quantity)
+    // Build payload items (chỉ variantId và quantity)
     const itemsPayload = cartItems.map(item => ({
       variantId: item.variantId,
       quantity: item.quantity,
     }));
 
-    // 4b. Build payload chính (khớp với CreateOrderRequest.java)
+    // Build payload chính (khớp với CreateOrderRequest.java)
     const payload = {
       shippingFullName: fullName,
       shippingPhoneNumber: phone,
@@ -53,17 +52,18 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onBackToShop }) => {
     };
 
     try {
-      // 4c. Gọi API (endpoint trong OrderController là "/api/v1/orders")
-      // Giả sử axios instance của bạn có baseURL là "/api/v1"
+      // Gọi API (endpoint trong OrderController là "/api/v1/orders")
       await api.post('/orders', payload);
 
       alert('Đặt hàng thành công! Cảm ơn bạn.');
-      clearCart();
-      onBackToShop(); // Quay về trang chủ
+      
+      // SỬA LỖI: Đợi giỏ hàng xóa xong mới về home
+      await clearCart(); 
+      onOrderSuccess(); // Gọi hàm thành công (để tải lại products và về home)
 
     } catch (err: any) {
       console.error("Lỗi đặt hàng:", err);
-      // 4d. Hiển thị lỗi từ backend (ví dụ: "Không đủ tồn kho")
+      // Hiển thị lỗi từ backend (ví dụ: "Không đủ tồn kho")
       const message = err.response?.data?.message || err.response?.data || 'Đã xảy ra lỗi. Vui lòng thử lại.';
       alert(`Lỗi khi đặt hàng: ${message}`);
     } finally {
@@ -81,7 +81,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onBackToShop }) => {
       <h1 className="text-4xl font-extrabold text-white tracking-wider text-center mb-10">THANH TOÁN</h1>
 
       {itemCount === 0 ? (
-        // ... (phần giỏ hàng rỗng giữ nguyên)
         <div className="text-center bg-gym-dark p-10 rounded-lg">
           <p className="text-gym-gray text-lg">Giỏ hàng của bạn đang trống.</p>
           <button onClick={onBackToShop} className="mt-6 bg-gym-yellow text-gym-darker font-bold py-3 px-8 rounded-md hover:bg-yellow-300 transition-colors">
@@ -109,7 +108,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onBackToShop }) => {
                   <input type="tel" id="phone" value={phone} onChange={e => setPhone(e.target.value)} className={inputStyle} placeholder="09xxxxxxxx" required />
                 </div>
                 
-                {/* 5. SỬA LẠI FORM ĐỊA CHỈ */}
+                {/* SỬA LẠI FORM ĐỊA CHỈ */}
                 <div className="sm:col-span-2">
                   <label htmlFor="street" className="block text-sm font-medium text-gym-gray mb-1">Số nhà, Tên đường</label>
                   <input type="text" id="street" value={street} onChange={e => setStreet(e.target.value)} className={inputStyle} placeholder="123 Đường ABC" required />
@@ -131,7 +130,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onBackToShop }) => {
             </section>
 
             {/* Payment Method */}
-            {/* ... (Phần Payment Method giữ nguyên) ... */}
             <section>
               <h2 className="text-2xl font-bold text-white mb-4 border-b border-gray-700 pb-2">Phương thức thanh toán</h2>
               <div className="mt-4 space-y-3">
@@ -171,15 +169,15 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onBackToShop }) => {
             </section>
           </div>
 
-          {/* Right Column (Order Summary) */}
+          {/* Right Column (Order Summary) - ĐÃ SỬA LỖI CRASH */}
           <div className="lg:col-span-1">
             <aside className="bg-gym-dark rounded-lg p-6 sticky top-24">
               <h2 className="text-2xl font-bold text-white mb-4 border-b border-gray-700 pb-2">Tóm tắt đơn hàng</h2>
-              {/* ... (Phần Tóm tắt đơn hàng giữ nguyên) ... */}
               <ul className="space-y-4 my-4 max-h-64 overflow-y-auto pr-2">
                 {cartItems.map(item => (
                   <li key={item.sku} className="flex items-center space-x-4">
                     <div className="relative">
+                      {/* Đã đổi từ item.images[0] thành item.image */}
                       <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded" />
                       <span className="absolute -top-2 -right-2 bg-gym-yellow text-gym-darker text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">{item.quantity}</span>
                     </div>
@@ -209,8 +207,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onBackToShop }) => {
                   <span className="text-gym-yellow">{total.toLocaleString('vi-VN')}₫</span>
                 </div>
               </div>
-
-              {/* 6. Cập nhật nút Đặt hàng */}
+              
               <button 
                 type="submit" 
                 disabled={isPlacingOrder}

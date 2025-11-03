@@ -1,4 +1,4 @@
-// ProductPage.tsx – HOÀN CHỈNH
+// ProductPage.tsx – HOÀN CHỈNH (Đã dọn dẹp)
 import React, { useState } from 'react';
 import { Product } from '../types';
 import { StarIcon } from '../constants';
@@ -15,43 +15,48 @@ const ProductPage: React.FC<ProductPageProps> = ({ product, onBack }) => {
   const { addToCart } = useCart();
   const [isAdding, setIsAdding] = useState(false);
 
-  // Lấy từ variants
-  const rawSizes = product.variants?.map(v => v.size).filter(Boolean) || [];
-  const rawFlavors = product.variants?.map(v => v.flavor).filter(Boolean) || [];
+  // 1. Lấy data CHUẨN từ props (đã được App.tsx parse)
+  // Không cần tính toán lại, chỉ cần lấy từ product
+  const availableSizes = product.sizes || [];
+  const availableFlavors = product.flavors || [];
 
-  const availableSizes = [...new Set(rawSizes)];
-  const availableFlavors = [...new Set(rawFlavors)];
+  // 2. Chỉ dùng data thật, KHÔNG DÙNG 'fallback'
+  const finalSizes = availableSizes;
+  const finalFlavors = availableFlavors;
 
-  // DỰ PHÒNG: Luôn hiển thị dù DB không có
-  const fallbackSizes = ['5Lbs', '10Lbs'];
-  const fallbackFlavors = ['Chocolate', 'Vanilla', 'Matcha'];
-
-  const finalSizes = availableSizes.length > 0 ? availableSizes : fallbackSizes;
-  const finalFlavors = availableFlavors.length > 0 ? availableFlavors : fallbackFlavors;
-
-  const [selectedSize, setSelectedSize] = useState(finalSizes[0]);
-  const [selectedFlavor, setSelectedFlavor] = useState(finalFlavors[0]);
+  // 3. Đặt state ban đầu
+  // Lấy phần tử đầu tiên, hoặc chuỗi rỗng '' nếu mảng rỗng
+  const [selectedSize, setSelectedSize] = useState(finalSizes[0] || '');
+  const [selectedFlavor, setSelectedFlavor] = useState(finalFlavors[0] || '');
 
   const handleAddToCart = async () => {
     if (isAdding || !product.inStock) return;
-    setIsAdding(true);
+    
+    // 4. Tìm variant thật (sử dụng data thật đã được parse)
+    const foundVariant = product.variants?.find(
+      v => v.flavor === selectedFlavor && v.size === selectedSize
+    );
 
-    // Tìm variant thật (nếu có)
-    let skuToUse = product.variants?.[0]?.sku;
-
-    if (product.variants) {
-      const found = product.variants.find(v => v.flavor === selectedFlavor && v.size === selectedSize);
-      skuToUse = found?.sku || product.variants[0].sku;
+    // Nếu không tìm thấy (ví dụ admin nhập thiếu), báo lỗi
+    if (!foundVariant) {
+        alert('Biến thể sản phẩm này không tồn tại hoặc đã hết hàng. Vui lòng chọn lại.');
+        return;
+    }
+    
+    // 5. Kiểm tra tồn kho trước khi thêm
+    if (foundVariant.stockQuantity < quantity) {
+        alert('Số lượng tồn kho không đủ.');
+        return;
     }
 
-    // DỰ PHÒNG: Dùng SKU đầu tiên
-    if (!skuToUse) skuToUse = `TEMP-${product.id}-${selectedFlavor}-${selectedSize}`;
-
+    setIsAdding(true);
     try {
-      await addToCart(skuToUse, quantity);
+      // 6. Gửi SKU chính xác
+      await addToCart(foundVariant.sku, quantity);
       alert('Đã thêm vào giỏ hàng!');
-    } catch (err) {
-      alert('Lỗi khi thêm vào giỏ');
+    } catch (err: any) {
+      // Hiển thị lỗi từ backend (ví dụ: CartContext báo lỗi)
+      alert(err.message || 'Lỗi khi thêm vào giỏ');
     } finally {
       setIsAdding(false);
     }
@@ -89,56 +94,63 @@ const ProductPage: React.FC<ProductPageProps> = ({ product, onBack }) => {
             </div>
             <span className="text-sm text-gym-gray ml-2">(0 đánh giá)</span>
             <span className="mx-2 text-gym-gray">|</span>
-            <span className="text-sm text-green-500">Còn hàng</span>
+            {/* Lấy 'inStock' từ product (được map từ firstVariant) */}
+            <span className={`text-sm ${product.inStock ? 'text-green-500' : 'text-red-500'}`}>
+              {product.inStock ? 'Còn hàng' : 'Hết hàng'}
+            </span>
           </div>
 
           <p className="text-3xl font-bold text-gym-yellow mb-6">
             {product.price.toLocaleString('vi-VN')}₫
           </p>
 
-          {/* FLAVORS */}
-          <div className="mb-6">
-            <h3 className="text-sm font-semibold text-gym-gray uppercase mb-2">
-              Hương vị: <span className="text-white font-bold">{selectedFlavor}</span>
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {finalFlavors.map(f => (
-                <button
-                  key={f}
-                  onClick={() => setSelectedFlavor(f)}
-                  className={`px-4 py-2 text-sm font-semibold rounded-full border-2 transition-colors ${
-                    selectedFlavor === f
-                      ? 'bg-gym-yellow text-gym-darker border-gym-yellow'
-                      : 'bg-transparent text-white border-gray-700 hover:border-gym-yellow'
-                  }`}
-                >
-                  {f}
-                </button>
-              ))}
+          {/* FLAVORS (Sẽ không render nếu mảng rỗng) */}
+          {finalFlavors.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold text-gym-gray uppercase mb-2">
+                Hương vị: <span className="text-white font-bold">{selectedFlavor}</span>
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {finalFlavors.map(f => (
+                  <button
+                    key={f}
+                    onClick={() => setSelectedFlavor(f)}
+                    className={`px-4 py-2 text-sm font-semibold rounded-full border-2 transition-colors ${
+                      selectedFlavor === f
+                        ? 'bg-gym-yellow text-gym-darker border-gym-yellow'
+                        : 'bg-transparent text-white border-gray-700 hover:border-gym-yellow'
+                    }`}
+                  >
+                    {f}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* SIZES */}
-          <div className="mb-6">
-            <h3 className="text-sm font-semibold text-gym-gray uppercase mb-2">
-              Kích cỡ: <span className="text-white font-bold">{selectedSize}</span>
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {finalSizes.map(s => (
-                <button
-                  key={s}
-                  onClick={() => setSelectedSize(s)}
-                  className={`px-4 py-2 text-sm font-semibold rounded-full border-2 transition-colors ${
-                    selectedSize === s
-                      ? 'bg-gym-yellow text-gym-darker border-gym-yellow'
-                      : 'bg-transparent text-white border-gray-700 hover:border-gym-yellow'
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
+          {/* SIZES (Sẽ không render nếu mảng rỗng) */}
+          {finalSizes.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold text-gym-gray uppercase mb-2">
+                Kích cỡ: <span className="text-white font-bold">{selectedSize}</span>
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {finalSizes.map(s => (
+                  <button
+                    key={s}
+                    onClick={() => setSelectedSize(s)}
+                    className={`px-4 py-2 text-sm font-semibold rounded-full border-2 transition-colors ${
+                      selectedSize === s
+                        ? 'bg-gym-yellow text-gym-darker border-gym-yellow'
+                        : 'bg-transparent text-white border-gray-700 hover:border-gym-yellow'
+                    }`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Add to cart */}
           <div className="flex items-center space-x-4 mb-6">
@@ -149,16 +161,16 @@ const ProductPage: React.FC<ProductPageProps> = ({ product, onBack }) => {
             </div>
             <button
               onClick={handleAddToCart}
-              disabled={isAdding}
-              className="flex-grow bg-gym-yellow text-gym-darker font-bold py-3 px-8 rounded-md hover:bg-yellow-300 disabled:bg-gray-600"
+              disabled={isAdding || !product.inStock}
+              className="flex-grow bg-gym-yellow text-gym-darker font-bold py-3 px-8 rounded-md hover:bg-yellow-300 disabled:bg-gray-600 disabled:cursor-not-allowed"
             >
-              {isAdding ? 'Đang thêm...' : 'Thêm vào giỏ'}
+              {isAdding ? 'Đang thêm...' : (product.inStock ? 'Thêm vào giỏ' : 'Hết hàng')}
             </button>
           </div>
 
           <div>
             <h3 className="text-lg font-bold text-white border-b border-gray-800 pb-2 mb-4">Mô tả sản phẩm</h3>
-            <p className="text-gym-gray">Bột protein tinh khiết, nay đã được cập nhật giá ưu đãi.</p>
+            <p className="text-gym-gray">{product.description || 'Sản phẩm chưa có mô tả.'}</p>
           </div>
         </div>
       </div>
