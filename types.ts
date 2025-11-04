@@ -150,3 +150,10 @@ export interface CreateProductRequest {
   brandId: number;    // (Backend yêu cầu ID)
   variants: ProductVariantRequest[];
 }
+export interface Review {
+  id: number;
+  author: string;
+  rating: number;
+  comment: string;
+  date: string;
+}

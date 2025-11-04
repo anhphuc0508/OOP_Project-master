@@ -1,4 +1,4 @@
-// File: App.tsx (Sửa logic fetch Orders)
+// File: App.tsx (Đã dọn dẹp logic review)
 import React, { useState, useCallback, useEffect } from 'react';
 import api from './lib/axios';
 import { CartProvider } from './contexts/CartContext';
@@ -12,14 +12,14 @@ import CheckoutPage from './components/CheckoutPage';
 import CartSidebar from './components/CartSidebar';
 import AuthModal from './components/AuthModal';
 import Chatbot from './components/Chatbot';
-import { navLinks } from './constants'; // Xóa 'allProducts'
+import { navLinks } from './constants';
 import BrandsPage from './components/BrandsPage';
 import { brands } from './constants';
 import AdminPage from './components/AdminPage';
 import AccountPage from './components/AccountPage';
 import OrderHistoryPage from './components/OrderHistoryPage';
 
-// ... (Hàm parseVariantName giữ nguyên) ...
+// ... (tất cả các hàm map... giữ nguyên) ...
 const parseVariantName = (name: string): { flavor: string, size: string } => {
     const sizeRegex = /(\d+(\.\d+)?\s*(Lbs|kg|Servings))/i;
     const sizeMatch = name.match(sizeRegex);
@@ -36,7 +36,6 @@ const parseVariantName = (name: string): { flavor: string, size: string } => {
         size: size 
     };
 };
-// ... (Hàm mapProductResponseToProduct giữ nguyên) ...
 const mapProductResponseToProduct = (res: any): Product => {
   const mappedVariants = (res.variants || []).map((v: any) => {
       const { flavor: parsedFlavor, size: parsedSize } = parseVariantName(v.name);
@@ -69,12 +68,8 @@ const mapProductResponseToProduct = (res: any): Product => {
     brandId: brandId,
   };
 };
-
-// === THÊM HÀM MAP ĐƠN HÀNG ===
-// (Chuyển đổi OrderResponse từ Java sang Order của React)
 const mapBackendOrderToFrontendOrder = (beOrder: any): Order => {
   
-  // Map Status (Backend -> Frontend)
   const mapStatus = (status: string): OrderStatus => {
     if (status === 'PENDING_CONFIRMATION') return 'Đang xử lý';
     if (status === 'DELIVERED') return 'Đã giao hàng';
@@ -82,36 +77,33 @@ const mapBackendOrderToFrontendOrder = (beOrder: any): Order => {
     return 'Đang xử lý'; // Mặc định
   };
 
-  // Map Payment Status
   const mapPaymentStatus = (status: string): PaymentStatus => {
     if (status === 'PAID') return 'Đã thanh toán';
     return 'Chưa thanh toán'; // PENDING hoặc mặc định
   };
   
-  // Map Order Items
   const mapItems = (details: any[]): CartItem[] => {
     return details.map(d => ({
       variantId: d.variantId,
-      productId: 0, // Backend không trả về cái này, tạm để 0
+      productId: 0, 
       name: `${d.productName} - ${d.variantName}`,
-      image: `https://picsum.photos/seed/product${d.variantId}/400/400`, // Ảnh tạm
+      image: `https://picsum.photos/seed/product${d.variantId}/400/400`, 
       price: d.priceAtPurchase,
       quantity: d.quantity,
-      sku: d.sku || 'N/A', // Backend response cũng nên trả về SKU
-      // flavor, size cũng không có, nhưng không quá quan trọng ở trang lịch sử
+      sku: d.sku || 'N/A', 
     }));
   };
 
   return {
-    id: String(beOrder.orderId), // Chuyển sang string
+    id: String(beOrder.orderId), 
     date: new Date(beOrder.createdAt).toLocaleString('vi-VN'),
     status: mapStatus(beOrder.status),
     total: beOrder.totalAmount,
     items: mapItems(beOrder.orderDetails || []),
     customer: {
       name: beOrder.shippingFullName,
-      email: '', // Backend không trả về
-      phone: '', // Backend không trả về
+      email: '', 
+      phone: '', 
       address: beOrder.shippingAddress,
     },
     paymentStatus: mapPaymentStatus(beOrder.paymentStatus),
@@ -120,21 +112,14 @@ const mapBackendOrderToFrontendOrder = (beOrder: any): Order => {
 };
 
 
-// === XÓA DỮ LIỆU GIẢ ===
-// const initialOrders: Order[] = [ ... ]; (Đã xóa)
-
-
 type Page = 'home' | 'product' | 'category' | 'checkout' | 'brands' | 'account' | 'order-history';
 
 const App: React.FC = () => {
+  // ... (tất cả state giữ nguyên) ...
   const [page, setPage] = useState<Page>('home');
   const [products, setProducts] = useState<Product[]>([]);
-  
-  // === SỬA STATE NÀY: Khởi tạo mảng rỗng ===
   const [orders, setOrders] = useState<Order[]>([]); 
-  
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  // ... (các state khác giữ nguyên)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
   const [theme, setTheme] = useState<Theme>('default');
@@ -149,8 +134,8 @@ const App: React.FC = () => {
 
   
   const fetchProducts = useCallback(async () => {
-    // ... (code fetchProducts giữ nguyên)
     try {
+      // Sửa lỗi lặp API (bỏ /api/v1)
       const res = await api.get('/products');
       console.log("Đã tải lại products:", res.data);
       const mappedProducts = res.data.map(mapProductResponseToProduct);
@@ -160,11 +145,10 @@ const App: React.FC = () => {
     }
   }, []); 
 
-  // === THÊM HÀM FETCH ORDERS ===
   const fetchOrders = useCallback(async (userRole: 'ADMIN' | 'USER') => {
     try {
-      // Admin lấy tất cả, User chỉ lấy của mình
       const endpoint = userRole === 'ADMIN' ? '/orders' : '/orders/my-orders';
+      // Sửa lỗi lặp API (bỏ /api/v1)
       const res = await api.get(endpoint);
       
       const mappedOrders = res.data.map(mapBackendOrderToFrontendOrder);
@@ -172,11 +156,11 @@ const App: React.FC = () => {
 
     } catch (err: any) {
       console.error("Lỗi tải đơn hàng:", err);
-      setOrders([]); // Lỗi thì trả về rỗng
+      setOrders([]); 
     }
   }, []);
 
-  // === SỬA USE EFFECT CHÍNH ===
+  // ... (useEffect chính giữ nguyên) ...
   useEffect(() => {
     const token = localStorage.getItem('token');
     const userJson = localStorage.getItem('user'); 
@@ -190,7 +174,6 @@ const App: React.FC = () => {
           role: userRole
         });
         
-        // GỌI API ĐƠN HÀNG NGAY KHI CÓ VAI TRÒ
         fetchOrders(userRole); 
 
       } catch (e) {
@@ -199,13 +182,12 @@ const App: React.FC = () => {
         localStorage.removeItem('user');
       }
     }
-    // Vẫn tải sản phẩm
     fetchProducts(); 
     
-  }, [fetchProducts, fetchOrders]); // Thêm fetchOrders
+  }, [fetchProducts, fetchOrders]);
 
 
-  // Xử lý đăng nhập
+  // ... (handleLoginSuccess, handleLogout giữ nguyên) ...
   const handleLoginSuccess = useCallback((userResponse: UserResponse) => { 
     localStorage.setItem('user', JSON.stringify(userResponse));
     const userRole = userResponse.role as ('USER' | 'ADMIN');
@@ -215,27 +197,25 @@ const App: React.FC = () => {
       role: userRole
     });
     
-    // GỌI API ĐƠN HÀNG SAU KHI ĐĂNG NHẬP
     fetchOrders(userRole);
 
     setIsAuthModalOpen(false);
     if (userRole === 'ADMIN') { 
       setIsAdminViewingSite(false);
     }
-  }, [fetchOrders]); // Thêm fetchOrders
+  }, [fetchOrders]); 
 
-  // Logout
   const handleLogout = useCallback(() => {
     localStorage.removeItem('token');
     localStorage.removeItem('user'); 
     setCurrentUser(null);
-    setOrders([]); // Xóa đơn hàng khi logout
+    setOrders([]); 
     setPage('home');
     setIsAdminViewingSite(false);
   }, []);
 
   
-  // ... (handleAddProduct, handleUpdateProduct, handleDeleteProduct giữ nguyên) ...
+  // ... (Các hàm CRUD product giữ nguyên) ...
   const handleAddProduct = useCallback(async (request: CreateProductRequest) => {
     try {
       await api.post('/products', request); 
@@ -271,11 +251,11 @@ const App: React.FC = () => {
     }
   }, []);
   
-  // Hàm này để cập nhật tồn kho VÀ tải lại đơn hàng
+  // ... (Các hàm handle... còn lại giữ nguyên) ...
   const handleOrderSuccess = useCallback(() => {
-    fetchProducts(); // Tải lại sản phẩm (để cập nhật tồn kho)
+    fetchProducts(); 
     if (currentUser) {
-      fetchOrders(currentUser.role); // Tải lại danh sách đơn hàng
+      fetchOrders(currentUser.role); 
     }
     setPage('home'); 
     window.scrollTo(0, 0);
@@ -283,16 +263,14 @@ const App: React.FC = () => {
 
 
   const handleUpdateOrderStatus = useCallback((orderId: string, status: OrderStatus) => {
-    // TODO: Gọi API PUT /api/v1/orders/{id}/status (Bạn cần tự tạo API này)
-    // Sau khi gọi API thành công:
+    // TODO: Gọi API PUT /api/v1/orders/{id}/status 
     setOrders(prevOrders =>
       prevOrders.map(order =>
         order.id === orderId ? { ...order, status } : order
       )
     );
-  }, []); // Tạm thời chỉ cập nhật ở frontend
+  }, []); 
 
-  // ... (Các hàm handle... còn lại giữ nguyên) ...
   const handleAdminViewSite = useCallback(() => {
     setIsAdminViewingSite(true);
     setPage('home');
@@ -364,11 +342,34 @@ const App: React.FC = () => {
     }
   }, [currentUser]);
 
+  // <<< SỬA LỖI 1: XÓA 'handleAddReview' KHỎI APP.TSX >>>
+  // (Đã xóa hàm 'handleAddReview' ở đây)
+  
+  // Các hàm còn lại
+  const handleAuthClick = useCallback(() => {
+    setIsAuthModalOpen(true);
+  }, []);
+
+  const handleStockSubscribe = useCallback((productId: number, email: string) => {
+    console.log("Gửi đăng ký nhận hàng:", { productId, email });
+  }, []);
+
 
   const renderPage = () => {
     switch (page) {
+      
+      // <<< SỬA LỖI 2: XÓA PROP 'onAddReview' >>>
       case 'product':
-        return <ProductPage product={selectedProduct!} onBack={handleGoHome} />;
+        return <ProductPage 
+                  product={selectedProduct!} 
+                  onBack={handleGoHome} 
+                  
+                  currentUser={currentUser}
+                  // 'onAddReview' đã bị xóa
+                  onAuthClick={handleAuthClick}
+                  onStockSubscribe={handleStockSubscribe}
+                />;
+      
       case 'category':
         const filterBy = selectedBrand 
           ? { type: 'brand' as const, value: selectedBrand }
@@ -386,7 +387,6 @@ const App: React.FC = () => {
       case 'account':
         return <AccountPage currentUser={currentUser!} onBack={handleGoHome} />;
       
-      // === TRANG NÀY GIỜ SẼ CÓ DATA THẬT ===
       case 'order-history':
         return <OrderHistoryPage onBack={handleGoHome} orders={orders} />;
       
@@ -396,7 +396,7 @@ const App: React.FC = () => {
     }
   };
 
-  // Logic kiểm tra Admin chuẩn
+  // ... (Phần render Admin và return() giữ nguyên) ...
   if (currentUser?.role === 'ADMIN' && !isAdminViewingSite) {
     return <AdminPage 
         currentUser={currentUser} 
@@ -406,7 +406,7 @@ const App: React.FC = () => {
         onAddProduct={handleAddProduct}
         onUpdateProduct={handleUpdateProduct}
         onDeleteProduct={handleDeleteProduct}
-        orders={orders} // Truyền 'orders' (data thật)
+        orders={orders}
         onUpdateOrderStatus={handleUpdateOrderStatus}
     />;
   }
