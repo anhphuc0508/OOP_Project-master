@@ -44,6 +44,8 @@ export interface Product {
   categoryId?: number;
   brandId?: number;
   
+  parentCategoryId?: number;
+  
   // 2. THÊM DÒNG NÀY ĐỂ HỨNG COMMENT
   comments?: Review[]; 
 }
