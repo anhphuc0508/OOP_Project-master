@@ -211,7 +211,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                             <option value={9}>Whey Hydrolyzed Whey</option> 
                             <option value={10}>Vegan Protein</option> 
                            <option value={11}>Protein Bar</option>  
-                           <option value={11}>Dạng bột</option>  
+                      <option value={15}> Dạng bột</option>
                         </optgroup>
                 
                          <option value={3}>Tăng cân</option>

@@ -33,7 +33,7 @@ const STATIC_CATEGORIES: Category[] = [
     { id: 9, name: 'Hydrolyzed Whey', parentId: 1 },
     { id: 10, name: 'Vegan Protein', parentId: 1 },
     { id: 11, name: 'Protein Bar', parentId: 1 },
-
+    { id: 15, name: 'Dạng bột', parentId: 1 },
     // Con của Tăng sức mạnh
     { id: 12, name: 'Pre-workout', parentId: 4 },
     { id: 13, name: 'BCAA / EAA', parentId: 4 },

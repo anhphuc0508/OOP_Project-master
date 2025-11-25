@@ -34,7 +34,7 @@ import OrderHistoryPage from './components/OrderHistoryPage';
 // 1. MAP CATEGORY ID
 const FE_CATEGORY_ID_MAP: Record<string, number> = {
     'Whey Protein': 1, 'Tăng cân': 3, 'Tăng sức mạnh': 4, 'Hỗ trợ sức khỏe': 5, 'Phụ kiện': 6,
-    'Whey Protein Blend': 7, 'Whey Protein Isolate': 8, 'Hydrolyzed Whey': 9, 'Vegan Protein': 10, 'Protein Bar': 11,
+    'Whey Protein Blend': 7, 'Whey Protein Isolate': 8, 'Hydrolyzed Whey': 9, 'Vegan Protein': 10, 'Protein Bar': 11, 'Dạng bột' : 15,
     'Pre-workout': 12, 'BCAA / EAA': 13, 'Creatine': 14,
 };
 
