@@ -88,7 +88,9 @@ const HomePage: React.FC<HomePageProps> = ({ products, onProductSelect, onCatego
         <CategorySection 
           title="TĂNG SỨC MẠNH"
           categoryKey="Tăng sức mạnh"
-          subCategories={['Pre-Workout', 'Creatine', 'Intra-Workout', 'BCAAs']}
+          subCategories={['Pre-workout',   // Chữ 'w' thường
+              'Creatine', 
+              'BCAA / EAA']}
           products={strengthProducts}
           onProductSelect={onProductSelect}
           onCategorySelect={onCategorySelect}

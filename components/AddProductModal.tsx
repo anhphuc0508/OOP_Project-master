@@ -205,9 +205,18 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                     <label className="block text-sm font-medium mb-1">Danh mục</label>
                     <select value={categoryId} onChange={e => setCategoryId(Number(e.target.value))} className={inputStyles}>
                         <option value={0}>Chọn danh mục</option>
-                        <option value={1}>Whey Protein</option>
-                        <option value={3}>Tăng cân</option>
-                        <option value={4}>Pre-workout</option>
+                        <optgroup label="WHEY PROTEIN">
+                            <option value={7}>Whey Protein Blend</option> 
+                            <option value={8}>Whey Protein Isolate</option>
+                        </optgroup>
+                
+                         <option value={3}>Tăng cân</option>
+                         <optgroup label="TĂNG SỨC MẠNH">
+                            <option value={12}>Pre-workout</option>
+                            
+                            <option value={13}>BCAA / EAA</option> 
+                            <option value={14}>Creatine</option>
+                        </optgroup>
                         <option value={5}>Hỗ trợ sức khỏe</option>
                         <option value={6}>Phụ kiện</option>
      

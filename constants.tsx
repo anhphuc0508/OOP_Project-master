@@ -1,9 +1,9 @@
-// File: src/constants.tsx (Đã sửa lỗi import và bổ sung code bị thiếu)
+// File: src/constants.tsx
+
 import React from 'react';
-// SỬA LỖI 1: Bổ sung import các types
 import { Product, Brand, Article, NavLink, SortOption } from './types';
 
-// FIX: Added SVG icon components that were missing.
+// --- ICONS ---
 export const StarIcon: React.FC<{ className?: string }> = ({ className }) => (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
         <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.007z" clipRule="evenodd" />
@@ -29,7 +29,7 @@ export const ResetIcon: React.FC<{ className?: string }> = ({ className }) => (
     </svg>
 );
 
-// SỬA LỖI 2: Thêm lại 'navLinks' (đã bị xóa)
+// --- NAVIGATION LINKS ---
 export const navLinks: NavLink[] = [
     {
         label: "Trang chủ",
@@ -42,24 +42,17 @@ export const navLinks: NavLink[] = [
             {
                 title: "Tăng cơ",
                 links: [
-                    { label: "Whey Protein Blend", href: "#", category: "Whey Protein" },
-                    { label: "Whey Protein Isolate", href: "#", category: "Whey Protein" },
-                    { label: "Hydrolyzed Whey", href: "#", category: "Whey Protein" },
-                    { label: "Vegan Protein", href: "#", category: "Whey Protein" },
+                    { label: "Whey Protein Blend", href: "#", category: "Whey Protein Blend" },
+                    { label: "Whey Protein Isolate", href: "#", category: "Whey Protein Isolate" },
+                    { label: "Hydrolyzed Whey", href: "#", category: "Hydrolyzed Whey" },
+                    { label: "Vegan Protein", href: "#", category: "Vegan Protein" },
                 ],
             },
             {
                 title: "Dạng sản phẩm",
                 links: [
-                    { label: "Protein Bar", href: "#", category: "Whey Protein" },
-                    { label: "Dạng bột", href: "#", category: "Whey Protein" },
-                ],
-            },
-            {
-                title: "Mục tiêu",
-                links: [
-                    { label: "Tăng cơ giảm mỡ", href: "#", category: "Whey Protein" },
-                    { label: "Bổ sung Protein", href: "#", category: "Whey Protein" },
+                    { label: "Protein Bar", href: "#", category: "Protein Bar" },
+                    { label: "Dạng bột", href: "#", category: "Dạng bột" },
                 ],
             },
         ],
@@ -71,6 +64,21 @@ export const navLinks: NavLink[] = [
     {
         label: "Tăng sức mạnh",
         href: "#",
+        megaMenu: [
+            {
+                title: "Trước & trong tập",
+                links: [
+                    { label: "Pre-workout", href: "#", category: "Pre-workout" },
+                ],
+            },
+            {
+                title: "Sức mạnh & phục hồi",
+                links: [
+                    { label: "BCAA / EAA", href: "#", category: "BCAA / EAA" },
+                    { label: "Creatine", href: "#", category: "Creatine" },
+                ],
+            },
+        ],
     },
     {
         label: "Hỗ trợ sức khỏe",
@@ -86,7 +94,7 @@ export const navLinks: NavLink[] = [
     },
 ];
 
-// SỬA LỖI 3: Thêm lại 'brands' (đã bị xóa)
+// --- BRANDS ---
 export const brands: Brand[] = [
     { id: 1, name: 'Optimum Nutrition', logo: 'https://cdn.hpm.io/wp-content/uploads/2019/06/25133501/ON_logo_black.png' },
     { id: 2, name: 'Myprotein', logo: 'https://static.thcdn.com/www/common/images/logos/logo-myprotein.svg' },
@@ -100,7 +108,7 @@ export const brands: Brand[] = [
     { id: 10, name: 'GymSup', logo: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgNDAiPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgc3R5bGU9ImZvbnQtd2VpZ2h0OmJvbGQ7ZmlsbDojZmZmIj5HWU1TVVA8L3RleHQ+PC9zdmc+' },
 ];
 
-// Thêm lại 'SORT_OPTIONS'
+// --- SORT OPTIONS ---
 export const SORT_OPTIONS: SortOption[] = [
     { value: 'default', label: 'Mặc định' },
     { value: 'popularity', label: 'Phổ biến nhất' },
@@ -108,8 +116,9 @@ export const SORT_OPTIONS: SortOption[] = [
     { value: 'price-desc', label: 'Giá: Cao đến thấp' },
 ];
 
-// --- DỮ LIỆU SẢN PHẨM VỚI 'VARIANTS' ---
-// (Đây là code tôi đã sửa lỗi 'sold' và 'stockQuantity' trước đó)
+// ================================================================
+// --- DỮ LIỆU SẢN PHẨM (QUAN TRỌNG: ĐÃ GẮN ID DANH MỤC) ---
+// ================================================================
 export const allProducts: Product[] = [
     {
       id: 1,
@@ -120,9 +129,13 @@ export const allProducts: Product[] = [
       rating: 4.8,
       reviews: 1250,
       inStock: true,
-      description: 'Gold Standard 100% Whey Blend – 24g protein pha trộn bao gồm Whey Protein Isolate, Whey Protein Concentrate, và Whey Peptides/Hydrolysates để hỗ trợ khối lượng cơ nạc.',
-      category: 'Whey Protein',
+      description: 'Gold Standard 100% Whey Blend...',
       brand: 'Optimum Nutrition',
+      
+      // 👇 Gắn ID để lọc: Whey Protein (1) -> Blend (7)
+      category: 'Whey Protein',
+      categoryId: 7,       
+      parentCategoryId: 1,
       
       flavors: ['Double Rich Chocolate', 'Vanilla Ice Cream', 'Mocha Cappuccino'],
       sizes: ['5Lbs', '10Lbs'],
@@ -148,26 +161,23 @@ export const allProducts: Product[] = [
           flavor: 'Double Rich Chocolate', size: '10Lbs'
         },
         {
-        variantId: 10, name: 'Gold Standard 10Lbs Vani',
-        sku: 'GSW-VANI-10LB',
-        price: 3500000, stockQuantity: 50,
-        flavor: 'Vanilla Ice Cream',
-        size: '10Lbs'
-      },
-      {
-        variantId: 11, name: 'Gold Standard 5Lbs Mocha',
-        sku: 'GSW-MOCHA-5LB',
-        price: 1850000, stockQuantity: 70, 
-        flavor: 'Mocha Cappuccino',
-        size: '5Lbs'
-      },
-      {
-        variantId: 12, name: 'Gold Standard 10Lbs Mocha',
-        sku: 'GSW-MOCHA-10LB',
-        price: 3500000, stockQuantity: 30,
-        flavor: 'Mocha Cappuccino',
-        size: '10Lbs'
-      }
+            variantId: 10, name: 'Gold Standard 10Lbs Vani',
+            sku: 'GSW-VANI-10LB',
+            price: 3500000, stockQuantity: 50,
+            flavor: 'Vanilla Ice Cream', size: '10Lbs'
+        },
+        {
+            variantId: 11, name: 'Gold Standard 5Lbs Mocha',
+            sku: 'GSW-MOCHA-5LB',
+            price: 1850000, stockQuantity: 70, 
+            flavor: 'Mocha Cappuccino', size: '5Lbs'
+        },
+        {
+            variantId: 12, name: 'Gold Standard 10Lbs Mocha',
+            sku: 'GSW-MOCHA-10LB',
+            price: 3500000, stockQuantity: 30,
+            flavor: 'Mocha Cappuccino', size: '10Lbs'
+        }
       ]
     },
     {
@@ -180,8 +190,12 @@ export const allProducts: Product[] = [
       reviews: 850,
       inStock: true,
       description: 'Impact Whey Isolate cung cấp 23g protein mỗi lần dùng...',
-      category: 'Whey Protein',
       brand: 'Myprotein',
+      
+      // 👇 Gắn ID để lọc: Whey Protein (1) -> Isolate (8)
+      category: 'Whey Protein',
+      categoryId: 8,
+      parentCategoryId: 1,
       
       flavors: ['Chocolate Brownie', 'Salted Caramel', 'Unflavored'],
       sizes: ['5.5Lbs'],
@@ -217,8 +231,12 @@ export const allProducts: Product[] = [
       reviews: 3200,
       inStock: true,
       description: 'C4 Original là một trong những sản phẩm pre-workout phổ biến nhất thế giới...',
-      category: 'Tăng sức mạnh',
       brand: 'Nutrabolt (C4)',
+      
+      // 👇 Gắn ID để lọc: Tăng sức mạnh (4) -> Pre-workout (12)
+      category: 'Tăng sức mạnh',
+      categoryId: 12,
+      parentCategoryId: 4,
       
       flavors: ['Icy Blue Razz', 'Fruit Punch', 'Watermelon'],
       sizes: ['60 Servings'], 
@@ -252,10 +270,14 @@ export const allProducts: Product[] = [
         price: 1650000,
         rating: 4.6,
         reviews: 2100,
-        category: 'Tăng cân',
         brand: 'Optimum Nutrition',
         inStock: true,
-        description: 'Serious Mass là sản phẩm tăng cân tối ưu, cung cấp 1250 calories, 50g protein, và hơn 250g carbohydrate mỗi liều dùng để hỗ trợ tăng cân và cơ bắp hiệu quả.',
+        description: 'Serious Mass là sản phẩm tăng cân tối ưu, cung cấp 1250 calories...',
+        
+        // 👇 Gắn ID để lọc: Tăng cân (3) -> Chính nó (3)
+        category: 'Tăng cân',
+        categoryId: 3,
+        parentCategoryId: 3,
         
         flavors: ['Chocolate', 'Vanilla', 'Banana'],
         sizes: ['12Lbs'],
@@ -284,17 +306,17 @@ export const allProducts: Product[] = [
     },
 ];
 
-// Thêm lại các export đã bị xóa
+// --- EXPORTS KHÁC ---
 export const trendingProducts = allProducts.slice(0, 4);
 export const wheyProducts = allProducts.filter(p => p.category === 'Whey Protein').slice(0, 6);
 export const strengthProducts = allProducts.filter(p => p.category === 'Tăng sức mạnh').slice(0, 6);
 
 export const supplementArticles: Article[] = [
-    { id: 1, title: 'Whey Protein là gì? Tác dụng và cách dùng hiệu quả', date: '15/07/2023', snippet: 'Tìm hiểu sâu về Whey Protein, lợi ích đối với người tập gym và cách sử dụng để tối ưu hóa sự phát triển cơ bắp.', image: 'https://picsum.photos/seed/article1/400/200', category: 'Kiến thức Supplement' },
-    { id: 2, title: 'Creatine: "Vua" của các loại thực phẩm bổ sung tăng sức mạnh', date: '12/07/2023', snippet: 'Creatine đã được chứng minh là một trong những chất bổ sung hiệu quả nhất để tăng cường sức mạnh và hiệu suất tập luyện.', image: 'https://picsum.photos/seed/article2/400/200', category: 'Kiến thức Supplement' },
+    { id: 1, title: 'Whey Protein là gì? Tác dụng và cách dùng hiệu quả', date: '15/07/2023', snippet: 'Tìm hiểu sâu về Whey Protein...', image: 'https://picsum.photos/seed/article1/400/200', category: 'Kiến thức Supplement' },
+    { id: 2, title: 'Creatine: "Vua" của các loại thực phẩm bổ sung tăng sức mạnh', date: '12/07/2023', snippet: 'Creatine đã được chứng minh là...', image: 'https://picsum.photos/seed/article2/400/200', category: 'Kiến thức Supplement' },
 ];
 
 export const nutritionArticles: Article[] = [
-    { id: 3, title: 'BMR là gì? Hướng dẫn tính BMR để tăng/giảm cân khoa học', date: '10/07/2023', snippet: 'Chỉ số BMR giúp bạn xác định lượng calo cần thiết mỗi ngày để duy trì hoặc thay đổi cân nặng một cách hiệu quả.', image: 'https://picsum.photos/seed/article3/400/200', category: 'Kiến thức Dinh dưỡng' },
-    { id: 4, title: 'Top 10 thực phẩm giàu protein cho người tập gym', date: '08/07/2023', snippet: 'Xây dựng cơ bắp không chỉ đến từ việc tập luyện mà còn phụ thuộc rất nhiều vào chế độ ăn uống giàu protein.', image: 'https://picsum.photos/seed/article4/400/200', category: 'Kiến thức Dinh dưỡng' },
+    { id: 3, title: 'BMR là gì? Hướng dẫn tính BMR để tăng/giảm cân khoa học', date: '10/07/2023', snippet: 'Chỉ số BMR giúp bạn xác định lượng calo...', image: 'https://picsum.photos/seed/article3/400/200', category: 'Kiến thức Dinh dưỡng' },
+    { id: 4, title: 'Top 10 thực phẩm giàu protein cho người tập gym', date: '08/07/2023', snippet: 'Xây dựng cơ bắp không chỉ đến từ việc tập luyện...', image: 'https://picsum.photos/seed/article4/400/200', category: 'Kiến thức Dinh dưỡng' },
 ];

@@ -52,8 +52,9 @@ const mapProductResponseToProduct = (res: any): Product => {
           ...v, 
           flavor: parsedFlavor, 
           size: parsedSize,
-          // 👇 QUAN TRỌNG: Map link ảnh biến thể từ Backend vào đây
           imageUrl: v.imageUrl,
+          categoryId: res.categoryId || 0,
+          parentCategoryId: res.parentCategoryId || undefined,
           oldPrice: v.salePrice 
       };
   });

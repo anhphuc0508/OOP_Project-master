@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Product, SortOptionValue } from '../types';
+import { Product, SortOption } from '../types';
 import { SORT_OPTIONS } from '../constants';
 import ProductCard from './ProductCard';
 import ProductFilters from './ProductFilters';
@@ -28,7 +28,7 @@ const CategorySection: React.FC<CategorySectionProps> = ({ title, categoryKey, s
   const [maxPrice, setMaxPrice] = useState(priceBounds.max);
   const [selectedRating, setSelectedRating] = useState(0);
   const [showInStockOnly, setShowInStockOnly] = useState(false);
-  const [sortOption, setSortOption] = useState<SortOptionValue>('default');
+  const [sortOption, setSortOption] = useState<SortOption>('default');
 
   const filteredAndSortedProducts = useMemo(() => {
     const filtered = products.filter(product => {
@@ -78,7 +78,13 @@ const CategorySection: React.FC<CategorySectionProps> = ({ title, categoryKey, s
         <h2 className="text-3xl font-extrabold uppercase text-white tracking-wider mb-2">{title}</h2>
         <div className="flex justify-center flex-wrap gap-x-4 gap-y-2">
           {subCategories.map(sub => (
-            <button key={sub} onClick={() => onCategorySelect(categoryKey)} className="text-gym-gray hover:text-gym-yellow transition-colors">{sub}</button>
+            <button 
+        key={sub} 
+        onClick={() => onCategorySelect(sub)} 
+        className="text-gym-gray hover:text-gym-yellow transition-colors"
+    >
+        {sub}
+    </button>
           ))}
         </div>
       </div>
@@ -110,7 +116,7 @@ const CategorySection: React.FC<CategorySectionProps> = ({ title, categoryKey, s
               <select 
                 id="sort-by"
                 value={sortOption}
-                onChange={(e) => setSortOption(e.target.value as SortOptionValue)}
+                onChange={(e) => setSortOption(e.target.value as SortOption)}
                 className="bg-gym-darker border border-gray-600 rounded-md p-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-gym-yellow"
               >
                 {SORT_OPTIONS.map(opt => (
