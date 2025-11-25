@@ -48,7 +48,7 @@ const HomePage: React.FC<HomePageProps> = ({ products, onProductSelect, onCatego
           title="WHEY PROTEIN"
           categoryKey="Whey Protein"
           // 👇 Tên này phải khớp 100% với STATIC_CATEGORIES bên CategoryPage.tsx
-          subCategories={[]}
+          subCategories={['Whey Protein Blend', 'Whey Protein Isolate', 'Hydrolyzed Whey', 'Vegan Protein', 'Protein Bar']}
           products={wheyProducts}
           onProductSelect={onProductSelect}
           onCategorySelect={onCategorySelect}
@@ -60,7 +60,9 @@ const HomePage: React.FC<HomePageProps> = ({ products, onProductSelect, onCatego
           // 👇 SỬA LẠI TÊN CHO KHỚP DATABASE
           // Sai: ['Pre-Workout', 'Creatine', 'Intra-Workout', 'BCAAs']
           // Đúng:
-        subCategories={[]}
+        subCategories={['Pre-workout',   // Chữ 'w' thường
+              'Creatine', 
+              'BCAA / EAA']}
           products={strengthProducts}
           onProductSelect={onProductSelect}
           onCategorySelect={onCategorySelect}
